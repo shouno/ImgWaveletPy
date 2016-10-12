@@ -27,10 +27,10 @@ class ImageWavelet:
     def BaseMat( self ):
         coeffs = pywt.wavedec2( np.zeros( (self.nV, self.nH) ), self.mode )
         nl = self.nV*self.nH
-        Phi = np.matrix( np.zeros( (nl, nl) ) )
+        Phi = np.array( np.zeros( (nl, nl) ) )
         coeffs[0][0] = 1.
-        img = pywt.waverec2( coeffs, mode )
-        Phi[:,0] = img.reshape( (nl,1) )
+        img = pywt.waverec2( coeffs, self.mode )
+        Phi[:,0] = img.reshape( (nl,) )
         coeffs[0][0] = 0.
         clm = 1
 
@@ -43,7 +43,7 @@ class ImageWavelet:
                 q = np.zeros( shp )
                 q.reshape( (cnum,) )[i] = 1.
                 coeffs[lv] = (q, cV, cD)
-                img = pywt.waverec2( coeffs, self.mode ).reshape( (nl,1) )
+                img = pywt.waverec2( coeffs, self.mode ).reshape( (nl,) )
                 Phi[:,clm] = img
                 clm = clm + 1
                 coeffs[lv] = ( cH, cV, cD )
@@ -54,7 +54,7 @@ class ImageWavelet:
                 q = np.zeros( shp )
                 q.reshape( (cnum,) )[i] = 1.
                 coeffs[lv] = (cH, q, cD)
-                img = pywt.waverec2( coeffs, self.mode ).reshape( (nl,1) )
+                img = pywt.waverec2( coeffs, self.mode ).reshape( (nl,) )
                 Phi[:,clm] = img
                 clm = clm + 1
                 coeffs[lv] = ( cH, cV, cD )
@@ -65,10 +65,12 @@ class ImageWavelet:
                 q = np.zeros( shp )
                 q.reshape( (cnum,) )[i] = 1.
                 coeffs[lv] = (cH, cV, q)
-                img = pywt.waverec2( coeffs, self.mode ).reshape( (nl,1) )
+                img = pywt.waverec2( coeffs, self.mode ).reshape( (nl,) )
                 Phi[:,clm] = img
                 clm = clm + 1
                 coeffs[lv] = ( cH, cV, cD )
+
+        return Phi
 
     def Wv2coeff( self, img=None ):
         """
